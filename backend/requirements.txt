@@ -9,3 +9,4 @@ langchain-chroma
 pypdf
 sentence-transformers
 python-multipart
+langchain_huggingface

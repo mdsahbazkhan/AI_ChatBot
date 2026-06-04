@@ -53,6 +53,59 @@ function App() {
     }
   };
 
+  const handleFileUpload = async (file) => {
+    const userMessageId = messageIdCounter++;
+    const userMessage = { id: userMessageId, role: "user", content: `📄 Uploaded: ${file.name}` };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    const aiMessageId = messageIdCounter++;
+    aiMessageIdRef.current = aiMessageId;
+    setMessages((prev) => [...prev, { id: aiMessageId, role: "ai", content: "" }]);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/upload-pdf`, {
+        method: "POST",
+        body: formData,
+      });
+      
+      const result = await response.json();
+      
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        const aiMsgIndex = newMessages.findIndex((m) => m.id === aiMessageIdRef.current);
+        if (aiMsgIndex !== -1) {
+          newMessages[aiMsgIndex] = { 
+            id: aiMessageIdRef.current, 
+            role: "ai", 
+            content: `✅ PDF uploaded successfully! Processed ${result.chunks} chunks from "${result.filename}".` 
+          };
+        }
+        return newMessages;
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        const aiMsgIndex = newMessages.findIndex((m) => m.id === aiMessageIdRef.current);
+        if (aiMsgIndex !== -1) {
+          newMessages[aiMsgIndex] = { 
+            id: aiMessageIdRef.current, 
+            role: "ai", 
+            content: "❌ Failed to upload PDF. Please try again." 
+          };
+        }
+        return newMessages;
+      });
+    } finally {
+      setIsLoading(false);
+      aiMessageIdRef.current = null;
+    }
+  };
+
   const handleNewChat = () => {
     setMessages([]);
   };
@@ -71,7 +124,7 @@ function App() {
       <main className="flex flex-col flex-1 min-w-0">
         <Header />
         <ChatWindow messages={messages} isLoading={isLoading} />
-        <ChatInput onSend={handleSend} isLoading={isLoading} />
+        <ChatInput onSend={handleSend} onFileUpload={handleFileUpload} isLoading={isLoading} />
       </main>
     </div>
   );
