@@ -9,7 +9,7 @@ export const ChatInput = ({ onSend, onFileUpload, isLoading }) => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
     }
   }, [message]);
 
@@ -40,7 +40,7 @@ export const ChatInput = ({ onSend, onFileUpload, isLoading }) => {
   };
 
   return (
-    <div className="p-3 border-t border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+    <div className="shrink-0 px-3 py-3 sm:px-4 sm:py-3 border-t border-gray-700 bg-gray-900/60 backdrop-blur-sm">
       <input
         ref={fileInputRef}
         type="file"
@@ -49,38 +49,30 @@ export const ChatInput = ({ onSend, onFileUpload, isLoading }) => {
         className="hidden"
       />
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto flex items-end gap-2">
         <button
           type="button"
           onClick={handleFileSelect}
           disabled={isLoading}
-          className="p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-all duration-200 flex-shrink-0"
           title="Upload PDF"
+          className="p-2.5 sm:p-3 rounded-xl bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shrink-0 active:scale-95"
         >
-          <svg
-            className="w-4 h-4 text-gray-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L8.936 12.32a4 4 0 015.656-5.656l6.586 6.586a2 2 0 002.828-2.828L12.793 4.5a8 8 0 00-11.314 11.314L8.936 18.32a4 4 0 015.656-5.656z"
-            />
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
         </button>
-        <div className="flex-1 relative">
+
+        <div className="flex-1 relative min-w-0">
           <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
+            placeholder="Message Velquix..."
             rows={1}
             disabled={isLoading}
-            className="w-full resize-none rounded-xl bg-gray-800 border border-gray-700 px-3 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 max-h-[200px] overflow-y-auto"
+            className="w-full resize-none rounded-xl bg-gray-800 border border-gray-700 px-3 py-2.5 sm:py-3 text-[16px] text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-200 max-h-[160px] overflow-y-auto disabled:opacity-60"
           />
         </div>
 
@@ -88,29 +80,22 @@ export const ChatInput = ({ onSend, onFileUpload, isLoading }) => {
           type="submit"
           disabled={!message.trim() || isLoading}
           className={`
-            p-3 rounded-xl transition-all duration-200 flex-shrink-0
-            ${
-              message.trim() && !isLoading
-                ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                : "bg-gray-800 cursor-not-allowed"
+            p-2.5 sm:p-3 rounded-xl transition-all duration-200 shrink-0 active:scale-95
+            ${message.trim() && !isLoading
+              ? "bg-indigo-600 hover:bg-indigo-500 cursor-pointer shadow-lg shadow-indigo-500/20"
+              : "bg-gray-800 cursor-not-allowed opacity-50"
             }
           `}
         >
-          <svg
-            className="w-4 h-4 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 19V5m0 0l-7 7m7-7l7 7"
-            />
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19V5m0 0l-7 7m7-7l7 7" />
           </svg>
         </button>
       </form>
+
+      <p className="text-center text-[10px] text-gray-600 mt-2 sm:hidden">
+        Shift + Enter for new line
+      </p>
     </div>
   );
 };

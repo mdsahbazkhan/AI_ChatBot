@@ -5,9 +5,11 @@ from app.routes.upload import router as upload_router
 from app.routes.rag_chat import (
     router as rag_router
 )
+from dotenv import load_dotenv
+
 from app.routes import history
 from app.routes import session
-
+load_dotenv()
 app=FastAPI(title="AI Chat API", description="A simple API for AI chat interactions", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,

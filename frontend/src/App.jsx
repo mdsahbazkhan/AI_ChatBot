@@ -16,6 +16,7 @@ function App() {
   const aiMessageIdRef = useRef(null);
   const [sessionId, setSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const createSession = async () => {
     try {
@@ -146,16 +147,17 @@ function App() {
 
   const handleNewChat = async () => {
     setMessages([]);
+    setSidebarOpen(false);
     await createSession();
     await loadSessions();
   };
 
-  const handleSelectChat = async (sessionId) => {
-    console.log(sessionId);
+  const handleSelectChat = async (id) => {
     try {
-      const history = await getChatHistory(sessionId);
+      const history = await getChatHistory(id);
 
-      setSessionId(sessionId);
+      setSessionId(id);
+      setSidebarOpen(false);
 
       let idCounter = 0;
 
@@ -183,16 +185,18 @@ function App() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-950">
+    <div className="flex h-screen bg-gray-950 overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
       <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
         sessions={sessions}
       />
 
       <main className="flex flex-col flex-1 min-w-0">
-        <Header />
+        <Header onOpenSidebar={() => setSidebarOpen(true)} />
         <ChatWindow messages={messages} isLoading={isLoading} />
         <ChatInput
           onSend={handleSend}
