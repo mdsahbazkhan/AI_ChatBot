@@ -3,7 +3,7 @@ import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { ChatWindow } from "./components/ChatWindow";
 import { ChatInput } from "./components/ChatInput";
-import { streamMessage } from "./services/api";
+import { getSessions, streamMessage, getChatHistory } from "./services/api";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 
@@ -15,6 +15,7 @@ function App() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const aiMessageIdRef = useRef(null);
   const [sessionId, setSessionId] = useState(null);
+  const [sessions, setSessions] = useState([]);
 
   const createSession = async () => {
     try {
@@ -26,17 +27,18 @@ function App() {
 
       setSessionId(data.session_id);
 
-
       return data.session_id;
     } catch (error) {
       console.error("Session creation failed", error);
     }
   };
+  const loadSessions = async () => {
+    try {
+      const data = await getSessions();
 
-  const initializeSession = async () => {
-    const id = await createSession();
-    if (id) {
-      setSessionId(id);
+      setSessions(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -124,10 +126,16 @@ function App() {
       const sysMessageId = messageIdCounter++;
       setMessages((prev) => [
         ...prev,
-        { id: sysMessageId, role: "system", content: `📄 ${result.filename} uploaded successfully` },
+        {
+          id: sysMessageId,
+          role: "system",
+          content: `📄 ${result.filename} uploaded successfully`,
+        },
       ]);
 
-      toast.success(`PDF uploaded successfully! ${result.chunks} chunks processed.`);
+      toast.success(
+        `PDF uploaded successfully! ${result.chunks} chunks processed.`,
+      );
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error("Failed to upload PDF. Please try again.");
@@ -139,19 +147,49 @@ function App() {
   const handleNewChat = async () => {
     setMessages([]);
     await createSession();
+    await loadSessions();
   };
 
- 
+  const handleSelectChat = async (sessionId) => {
+    console.log(sessionId);
+    try {
+      const history = await getChatHistory(sessionId);
+
+      setSessionId(sessionId);
+
+      let idCounter = 0;
+
+      const formatted = history.map((msg) => ({
+        id: idCounter++,
+
+        role: msg.role === "assistant" ? "ai" : "user",
+
+        content: msg.content,
+      }));
+
+      setMessages(formatted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     (async () => {
-      await initializeSession();
+      await loadSessions();
+      if (sessions.length > 0) {
+        handleSelectChat(sessions[0].id);
+      }
     })();
   }, []);
 
   return (
     <div className="flex h-screen bg-gray-950">
       <Toaster position="top-center" reverseOrder={false} />
-      <Sidebar onNewChat={handleNewChat} onSelectChat={handleSelectChat} />
+      <Sidebar
+        onNewChat={handleNewChat}
+        onSelectChat={handleSelectChat}
+        sessions={sessions}
+      />
 
       <main className="flex flex-col flex-1 min-w-0">
         <Header />

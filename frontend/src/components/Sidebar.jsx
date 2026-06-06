@@ -1,13 +1,8 @@
 import { useState } from "react";
 
-export const Sidebar = ({ onNewChat, onSelectChat }) => {
+export const Sidebar = ({ onNewChat, onSelectChat, sessions }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const dummyChats = [
-    { id: 1, title: "How to build a React app?" },
-    { id: 2, title: "Explain quantum computing" },
-    { id: 3, title: "Write a Python script" },
-  ];
+  console.log(sessions);
 
   return (
     <>
@@ -95,11 +90,11 @@ export const Sidebar = ({ onNewChat, onSelectChat }) => {
 
         <nav className="flex-1 overflow-y-auto px-2 pb-4">
           <div className="space-y-1">
-            {dummyChats.map((chat) => (
+            {sessions.map((session) => (
               <button
-                key={chat.id}
+                key={session.session_id}
                 onClick={() => {
-                  onSelectChat(chat.id);
+                  onSelectChat(session.session_id);
                   setIsOpen(false);
                 }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 text-left transition-colors group"
@@ -118,7 +113,7 @@ export const Sidebar = ({ onNewChat, onSelectChat }) => {
                   />
                 </svg>
                 <span className="text-sm text-gray-400 truncate flex-1 group-hover:text-white transition-colors">
-                  {chat.title}
+                  {session.has_pdf ? "📄" : "💬"} {session.title}
                 </span>
               </button>
             ))}

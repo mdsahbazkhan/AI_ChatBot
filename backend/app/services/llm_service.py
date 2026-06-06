@@ -4,6 +4,16 @@ from typing import AsyncGenerator
 
 from langchain_core.messages import (HumanMessage,AIMessage,SystemMessage)
 from app.memory.session_memory import chat_sessions
+from app.services.chat_history_service import (
+    save_chat,
+    prepare_chat_history
+)
+from app.services.metadata_service import (
+    load_metadata,
+    save_metadata
+)
+
+
 
 load_dotenv()
 
@@ -24,6 +34,25 @@ async def generate_response(session_id: str,
         
     # Add user message to session history
     chat_sessions[session_id].append(HumanMessage(content=message))
+    metadata = load_metadata(
+    session_id
+)
+
+    if (
+        metadata["title"] == "New Chat"
+    and
+    metadata["has_pdf"] == False
+):
+
+        save_metadata(
+
+        session_id,
+
+        message[:30],
+
+        False
+
+    )
     
     # Send the entire session history to the LLM and get a response
     response=await llm.ainvoke(chat_sessions[session_id])
@@ -31,6 +60,29 @@ async def generate_response(session_id: str,
     
     # Store the AI response in session history
     chat_sessions[session_id].append(AIMessage(content=response.content))
+    messages = []
+
+    for msg in chat_sessions[session_id]:
+
+        if isinstance(msg, HumanMessage):
+
+         messages.append({
+            "role":"user",
+            "content":msg.content
+        })
+
+        elif isinstance(msg, AIMessage):
+
+            messages.append({
+            "role":"assistant",
+            "content":msg.content
+        })
+    save_chat(
+    session_id,
+    prepare_chat_history(
+        chat_sessions[session_id]
+    )
+)
     
     return response.content 
 
@@ -55,7 +107,25 @@ async def stream_response(
     chat_sessions[session_id].append(
         HumanMessage(content=message)
     )
+    metadata = load_metadata(
+    session_id
+)
 
+    if (
+        metadata["title"] == "New Chat"
+    and
+    metadata["has_pdf"] == False
+):
+
+        save_metadata(
+
+        session_id,
+
+        message[:30],
+
+        False
+
+    )
     full_response = ""
 
     async for chunk in llm.astream(
@@ -71,3 +141,9 @@ async def stream_response(
     chat_sessions[session_id].append(
         AIMessage(content=full_response)
     )
+    save_chat(
+    session_id,
+    prepare_chat_history(
+        chat_sessions[session_id]
+    )
+)

@@ -7,6 +7,7 @@ from app.services.pdf_service import (
 from app.services.vector_store import (
     create_vector_store
 )
+from app.services.metadata_service import save_metadata
 from app.services.rag_service import get_pdf_storage
 import json
 router=APIRouter()
@@ -63,6 +64,13 @@ async def upload_file(file: UploadFile = File(...),session_id: str = Form(...)):
             chunks,
             vector_folder
         )
+    pdf_title = os.path.splitext(file.filename)[0]
+
+    save_metadata(
+    session_id,
+    pdf_title,
+    True
+)
 
     storage_info = os.path.join(
         session_folder,

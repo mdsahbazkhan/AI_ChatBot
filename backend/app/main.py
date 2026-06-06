@@ -5,6 +5,7 @@ from app.routes.upload import router as upload_router
 from app.routes.rag_chat import (
     router as rag_router
 )
+from app.routes import history
 from app.routes import session
 
 app=FastAPI(title="AI Chat API", description="A simple API for AI chat interactions", version="1.0.0")
@@ -27,4 +28,6 @@ app.include_router(router)
 app.include_router(upload_router)
 app.include_router(rag_router)
 app.include_router(session.router)
-
+app.include_router(
+    history.router
+)

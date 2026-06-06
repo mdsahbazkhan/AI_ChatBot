@@ -1,7 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function streamMessage(sessionId, message, onChunk) {
-  
   const response = await fetch(`${BASE_URL}/chat/stream`, {
     method: "POST",
 
@@ -36,4 +35,23 @@ export async function streamMessage(sessionId, message, onChunk) {
 
     onChunk(chunk);
   }
+}
+
+export async function getSessions() {
+  const response = await fetch(`${BASE_URL}/sessions`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load sessions");
+  }
+
+  return await response.json();
+}
+export async function getChatHistory(sessionId) {
+  const response = await fetch(`${BASE_URL}/chat-history/${sessionId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load history");
+  }
+
+  return await response.json();
 }
