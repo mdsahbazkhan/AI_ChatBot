@@ -10,6 +10,7 @@ router = APIRouter()
 
 class QuestionRequest(BaseModel):
     question: str
+    session_id: str
 
 
 @router.post("/ask")
@@ -18,6 +19,7 @@ async def ask(
 ):
 
     answer = await ask_question(
+        request.session_id,
         request.question
     )
 

@@ -6,36 +6,56 @@ from langchain_groq import ChatGroq
 
 from langchain_chroma import Chroma
 load_dotenv()
+import os
 
 llm = ChatGroq(
-    model="llama3-8b-8192"
+    model="llama-3.3-70b-versatile"
 )
 
 
 
 
 embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    model_kwargs={
+        "device": "cpu"
+    }
 )
 
+def pdf_exists(session_id):
 
-def get_retriever():
+    vector_path = os.path.join(
+        "storage",
+        session_id,
+        "vectordb"
+    )
 
+    return (
+        os.path.exists(vector_path)
+        and
+        len(os.listdir(vector_path)) > 0
+    )
+
+def get_retriever(session_id):
+    vector_path = os.path.join(
+        "storage",
+        session_id,
+        "vectordb"
+    )
     vector_store = Chroma(
-        persist_directory="chroma_db",
+        persist_directory=vector_path,
         embedding_function=embeddings
     )
 
-    retriever = vector_store.as_retriever(
-        search_kwargs={"k": 3}
+    return vector_store.as_retriever(
+        search_kwargs={"k":3}
     )
 
-    return retriever
 
+async def ask_question(session_id: str,
+    question: str):
 
-async def ask_question(question: str):
-
-    retriever = get_retriever()
+    retriever = get_retriever(session_id)
 
     docs = retriever.invoke(question)
 
@@ -44,15 +64,23 @@ async def ask_question(question: str):
     )
 
     prompt = f"""
-    Answer the question only using the
-    provided context.
+You are a PDF assistant.
 
-    Context:
-    {context}
+Answer ONLY using the provided context.
 
-    Question:
-    {question}
-    """
+If the answer is not found in the context,
+reply exactly:
+
+I couldn't find that information in the uploaded document.
+
+Do not use outside knowledge.
+
+Context:
+{context}
+
+Question:
+{question}
+"""
 
     response = await llm.ainvoke(prompt)
 
