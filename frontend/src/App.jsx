@@ -26,7 +26,6 @@ function App() {
 
       setSessionId(data.session_id);
 
-      console.log("Session created:", data.session_id);
 
       return data.session_id;
     } catch (error) {
@@ -43,7 +42,6 @@ function App() {
 
   const handleSend = async (content) => {
     if (!sessionId) {
-      console.log("Session not ready!");
       return;
     }
 
@@ -143,10 +141,7 @@ function App() {
     await createSession();
   };
 
-  const handleSelectChat = (id) => {
-    console.log("Selected chat:", id);
-  };
-
+ 
   useEffect(() => {
     (async () => {
       await initializeSession();

@@ -24,15 +24,13 @@ router = APIRouter()
     "/chat/stream",
 )
 async def chat_stream(request: ChatRequest):
-    print(request)
 
     try:
 
         pdf_filename = get_pdf_storage(request.session_id) if pdf_exists(request.session_id) else None
 
         async def generator():
-            print("Session ID:", request.session_id)
-            print("PDF Exists:", pdf_filename)
+           
 
             if pdf_filename:
                 async for chunk in stream_rag_response(
