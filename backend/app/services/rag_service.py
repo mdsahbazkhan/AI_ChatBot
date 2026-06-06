@@ -23,12 +23,25 @@ llm = ChatGroq(
 
 
 
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2",
-    model_kwargs={
-        "device": "cpu"
-    }
-)
+# --------------------
+# Lazy Loading Embeddings
+# --------------------
+
+_embeddings = None
+
+
+def get_embeddings():
+    global _embeddings
+
+    if _embeddings is None:
+        _embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={
+                "device": "cpu"
+            }
+        )
+
+    return _embeddings
 
 def pdf_exists(session_id):
     session_folder = os.path.join("storage", session_id)
