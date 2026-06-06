@@ -25,6 +25,17 @@ export const ChatWindow = ({ messages, isLoading }) => {
         <div className="max-w-3xl mx-auto">
           {messages.map((msg, index) => {
             const isLastStreaming = isLoading && index === messages.length - 1 && msg.role === "ai" && msg.content === "";
+            if (msg.role === "system") {
+              return (
+                <div key={msg.id || index} className="fade-in mb-4 lg:mb-6">
+                  <div className="flex justify-center">
+                    <div className="px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-gray-400 text-sm">
+                      <p>{msg.content}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
             return (
               <div key={msg.id || index} className="fade-in">
                 <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-4 lg:mb-6`}>

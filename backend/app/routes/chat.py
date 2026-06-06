@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
+from fastapi.responses import StreamingResponse
 from app.models.chat_model import (
     ChatRequest,
     ChatResponse
@@ -11,39 +12,45 @@ from app.services.llm_service import (
 
 from app.services.rag_service import (
     ask_question,
-      pdf_exists
+    pdf_exists,
+    stream_rag_response,
+    get_pdf_storage
 )
-
-from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 
 
 @router.post(
     "/chat/stream",
-    response_model=ChatResponse
 )
 async def chat_stream(request: ChatRequest):
+    print(request)
 
     try:
 
-        if pdf_exists(request.session_id):
+        pdf_filename = get_pdf_storage(request.session_id) if pdf_exists(request.session_id) else None
 
-            ai_response = await ask_question(
-            request.session_id,
-            request.message
-        )
+        async def generator():
+            print("Session ID:", request.session_id)
+            print("PDF Exists:", pdf_filename)
 
-        else:
+            if pdf_filename:
+                async for chunk in stream_rag_response(
+                    request.session_id,
+                    request.message,
+                    pdf_filename
+                ):
+                    yield chunk
+            else:
+                async for chunk in stream_response(
+                    request.session_id,
+                    request.message
+                ):
+                     yield chunk
 
-            ai_response = await generate_response(
-            request.session_id,
-            request.message
-    )
-
-        return ChatResponse(
-            response=ai_response
-        )
+        return StreamingResponse(
+            generator(),
+            media_type="text/plain")
 
     except Exception as e:
 

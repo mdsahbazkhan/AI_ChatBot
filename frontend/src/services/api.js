@@ -1,5 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
-export async function streamMessage(message, onChunk) {
+
+export async function streamMessage(sessionId, message, onChunk) {
+  
   const response = await fetch(`${BASE_URL}/chat/stream`, {
     method: "POST",
 
@@ -8,21 +10,29 @@ export async function streamMessage(message, onChunk) {
     },
 
     body: JSON.stringify({
-      session_id: "1234",
+      session_id: sessionId,
       message,
     }),
   });
 
-  const reader = response.body.getReader();//chunk-by-chunk reading
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
 
-  const decoder = new TextDecoder();//Uint8Array → readable text
+  if (!response.body) {
+    throw new Error("No response body");
+  }
+
+  const reader = response.body.getReader();
+
+  const decoder = new TextDecoder();
 
   while (true) {
     const { done, value } = await reader.read();
 
     if (done) break;
 
-    const chunk = decoder.decode(value);
+    const chunk = decoder.decode(value, { stream: true });
 
     onChunk(chunk);
   }

@@ -7,6 +7,8 @@ from app.services.pdf_service import (
 from app.services.vector_store import (
     create_vector_store
 )
+from app.services.rag_service import get_pdf_storage
+import json
 router=APIRouter()
 
 
@@ -61,6 +63,18 @@ async def upload_file(file: UploadFile = File(...),session_id: str = Form(...)):
             chunks,
             vector_folder
         )
+
+    storage_info = os.path.join(
+        session_folder,
+        "storage_info.json"
+    )
+
+    with open(storage_info, "w") as f:
+        json.dump({
+            "filename": file.filename,
+            "chunks": len(chunks),
+            "pdf_path": file_path
+        }, f)
 
     return {
             "message":
