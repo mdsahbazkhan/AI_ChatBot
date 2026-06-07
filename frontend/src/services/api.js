@@ -35,6 +35,11 @@ export async function streamMessage(sessionId, message, onChunk) {
 
     onChunk(chunk);
   }
+
+  const remaining = decoder.decode();
+  if (remaining) {
+    onChunk(remaining);
+  }
 }
 
 export async function getSessions() {

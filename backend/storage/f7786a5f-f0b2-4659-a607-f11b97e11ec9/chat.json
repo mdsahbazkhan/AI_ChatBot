@@ -1,0 +1,26 @@
+[
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, how can I help you today?"
+    },
+    {
+        "role": "user",
+        "content": "how are you"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thanks. I'm here to help with any questions or tasks you have."
+    },
+    {
+        "role": "user",
+        "content": "i am good"
+    },
+    {
+        "role": "assistant",
+        "content": "Glad to hear that. Is there something I can help you with or would you like to chat?"
+    }
+]

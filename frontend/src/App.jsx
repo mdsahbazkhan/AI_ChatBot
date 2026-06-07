@@ -63,10 +63,11 @@ function App() {
     try {
       await streamMessage(sessionId, content, (chunk) => {
         if (!chunk) return;
+        const currentAiId = aiMessageIdRef.current;
         setMessages((prev) => {
           const newMessages = [...prev];
           const aiMsgIndex = newMessages.findIndex(
-            (m) => m.id === aiMessageIdRef.current,
+            (m) => m.id === currentAiId,
           );
 
           if (aiMsgIndex !== -1) {

@@ -1,0 +1,34 @@
+[
+    {
+        "role": "user",
+        "content": "Hello"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, how can I help you?"
+    },
+    {
+        "role": "user",
+        "content": "Who is PM of India?"
+    },
+    {
+        "role": "assistant",
+        "content": "Narendra Modi is the Prime Minister of India."
+    },
+    {
+        "role": "user",
+        "content": "who is Cm of Jharkhand?"
+    },
+    {
+        "role": "assistant",
+        "content": "Hemant Soren is the Chief Minister of Jharkhand."
+    },
+    {
+        "role": "user",
+        "content": "What is his age?"
+    },
+    {
+        "role": "assistant",
+        "content": "Hemant Soren was born on August 10, 1975, which makes him 48 years old."
+    }
+]

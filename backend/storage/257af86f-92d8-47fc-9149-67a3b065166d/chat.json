@@ -1,0 +1,18 @@
+[
+    {
+        "role": "user",
+        "content": "Hello"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello. How can I help you?"
+    },
+    {
+        "role": "user",
+        "content": "who is CM of India"
+    },
+    {
+        "role": "assistant",
+        "content": "India is a country with multiple states, each having its own Chief Minister (CM). However, if you're referring to the Prime Minister (PM) of India, it's Narendra Modi."
+    }
+]

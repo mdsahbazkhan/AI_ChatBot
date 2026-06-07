@@ -1,0 +1,18 @@
+[
+    {
+        "role": "user",
+        "content": "hello ,who is CM of Jharkhand"
+    },
+    {
+        "role": "assistant",
+        "content": "The Chief Minister of Jharkhand is Hemant Soren."
+    },
+    {
+        "role": "user",
+        "content": "what is his age?"
+    },
+    {
+        "role": "assistant",
+        "content": "Hemant Soren was born on August 10, 1975, which makes him 47 years old (as of 2022)."
+    }
+]
